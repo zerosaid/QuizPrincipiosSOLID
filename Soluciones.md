@@ -62,17 +62,53 @@ private List<Arbitro> arbitros = new ArrayList<>();
 /**
 * Registra los participantes en el sistema.
 */
-public class RegistroParticipantes {
-    private List<Equipo> equipos;
-    private List<Arbitro> arbitros;
+public void registrarParticipantes() {
+// Registrar equipos
+Equipo equipoA = new Equipo("Los Ganadores");
+equipoA.agregarJugador(new Jugador("Juan Pérez", "Delantero"));
+equipoA.agregarJugador(new Jugador("Pedro Pan", "Portero"));
+equipos.add(equipoA);
+System.out.println("Equipo 'Los Ganadores' registrado.");
+Equipo equipoB = new Equipo("Los Retadores");
+equipoB.agregarJugador(new Jugador("Alicia Smith", "Defensa"));
 
-    public RegistroParticipantes(List<Equipo> equipos, List<Arbitro> arbitros) {
-        this.equipos = equipos;
-        this.arbitros = arbitros;
-    }
+equipos.add(equipoB);
+System.out.println("Equipo 'Los Retadores' registrado.");
+// Contratar árbitros
+arbitros.add(new Arbitro("Miguel Díaz"));
+System.out.println("Árbitro 'Miguel Díaz' contratado.");
+}
 
-    public void registrar() {
-        
+
+
+// --- ISP + SRP: Interfaz para registro de participantes ---
+/**
+* Registra los participantes en el sistema.
+*/
+
+interface RegistroParticipantes {
+    void registrar(List<Equipo> equipos, List<Arbitro> arbitros);
+}
+
+// --- Implementación concreta (ejemplo demo) ---
+class RegistroDemo implements RegistroParticipantes {
+    @Override
+    public void registrar(List<Equipo> equipos, List<Arbitro> arbitros) {
+        // Registrar equipos
+        Equipo equipoA = new Equipo("Los Ganadores");
+        equipoA.agregarJugador(new Jugador("Juan Pérez", "Delantero"));
+        equipoA.agregarJugador(new Jugador("Pedro Pan", "Portero"));
+        equipos.add(equipoA);
+        System.out.println("Equipo 'Los Ganadores' registrado.");
+
+        Equipo equipoB = new Equipo("Los Retadores");
+        equipoB.agregarJugador(new Jugador("Alicia Smith", "Defensa"));
+        equipos.add(equipoB);
+        System.out.println("Equipo 'Los Retadores' registrado.");
+
+        // Contratar árbitros
+        arbitros.add(new Arbitro("Miguel Díaz"));
+        System.out.println("Árbitro 'Miguel Díaz' contratado.");
     }
 }
 
