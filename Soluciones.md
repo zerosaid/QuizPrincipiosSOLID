@@ -1,7 +1,11 @@
 package com.campeonato.gestor;
 import java.util.ArrayList;
 import java.util.List;
+
+
 // --- Clases de Entidad (simuladas para el ejercicio) ---
+
+ // Seccion corregidad
 class Equipo {
 private String nombre;
 private List<Jugador> jugadores = new ArrayList<>();
@@ -10,6 +14,28 @@ public String getNombre() { return nombre; }
 public void agregarJugador(Jugador j) { this.jugadores.add(j); }
 public List<Jugador> getJugadores() { return this.jugadores; }
 }
+
+//
+
+// Coddigo corregido con el primer  principio SRP
+class Equipo {
+    private String nombre;
+    private List<Jugador> jugadores = new ArrayList<>();
+    public Equipo(String nombre) { this.nombre = nombre; }
+    public String getNombre() { return nombre; }
+    public void agregarJugador(Jugador j) { this.jugadores.add(j); }
+    public List<Jugador> getJugadores() { return this.jugadores; }
+}
+
+class EquipoService {
+    private List<Equipo> equipos = new ArrayList<>();
+    public void registrarEquipo(Equipo equipo) { equipos.add(equipo); }
+    public List<Equipo> listarEquipos() { return equipos; }
+}
+
+//
+
+
 class Jugador {
 private String nombre;
 private String posicion; // Posibles valores: "Portero", "Delantero",
@@ -24,31 +50,33 @@ private String nombre;
 public Arbitro(String nombre) { this.nombre = nombre; }
 public String getNombre() { return nombre; }
 }
+
 /**
 * Clase principal para la gestión de un campeonato de fútbol.
 */
 public class GestorCampeonato {
 private List<Equipo> equipos = new ArrayList<>();
 private List<Arbitro> arbitros = new ArrayList<>();
+
+
 /**
 * Registra los participantes en el sistema.
 */
-public void registrarParticipantes() {
-// Registrar equipos
-Equipo equipoA = new Equipo("Los Ganadores");
-equipoA.agregarJugador(new Jugador("Juan Pérez", "Delantero"));
-equipoA.agregarJugador(new Jugador("Pedro Pan", "Portero"));
-equipos.add(equipoA);
-System.out.println("Equipo 'Los Ganadores' registrado.");
-Equipo equipoB = new Equipo("Los Retadores");
-equipoB.agregarJugador(new Jugador("Alicia Smith", "Defensa"));
+public class RegistroParticipantes {
+    private List<Equipo> equipos;
+    private List<Arbitro> arbitros;
 
-equipos.add(equipoB);
-System.out.println("Equipo 'Los Retadores' registrado.");
-// Contratar árbitros
-arbitros.add(new Arbitro("Miguel Díaz"));
-System.out.println("Árbitro 'Miguel Díaz' contratado.");
+    public RegistroParticipantes(List<Equipo> equipos, List<Arbitro> arbitros) {
+        this.equipos = equipos;
+        this.arbitros = arbitros;
+    }
+
+    public void registrar() {
+        
+    }
 }
+
+
 /**
 * Calcula las bonificaciones para los jugadores.
 */
@@ -74,6 +102,8 @@ jugador.getNombre());
 }
 }
 }
+
+
 /**
 * Genera y muestra en consola diferentes tipos de reportes.
 */
@@ -105,6 +135,8 @@ contenidoHtml += " </ul>\n</body></html>";
 System.out.println(contenidoHtml);
 }
 }
+
+
 // Método principal para simular la ejecución del módulo
 public static void main(String[] args) {
 GestorCampeonato gestor = new GestorCampeonato();
