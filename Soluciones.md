@@ -113,6 +113,9 @@ class RegistroDemo implements RegistroParticipantes {
 }
 
 
+// =============================
+// --- Mala implementación
+// =============================
 /**
 * Calcula las bonificaciones para los jugadores.
 */
@@ -139,38 +142,151 @@ jugador.getNombre());
 }
 }
 
+// =============================
+// --- Versión corregida (OCP)
+// =============================
 
-/**
-* Genera y muestra en consola diferentes tipos de reportes.
-*/
-public void generarReportes(String formato) {
-if (formato.equalsIgnoreCase("TEXTO")) {
-String contenidoReporte = "--- Reporte del Campeonato (TEXTO) ---\n";
-contenidoReporte += "EQUIPOS:\n";
-for (Equipo equipo : equipos) {
-contenidoReporte += "- " + equipo.getNombre() + "\n";
+// Interfaz para estrategias de bonificación
+interface EstrategiaBonificacion {
+    void calcular(Jugador jugador);
 }
-contenidoReporte += "ÁRBITROS:\n";
-for (Arbitro arbitro : arbitros) {
-contenidoReporte += "- " + arbitro.getNombre() + "\n";
-}
-System.out.println(contenidoReporte);
-} else if (formato.equalsIgnoreCase("HTML")) {
-String contenidoHtml = "<html><body>\n";
-contenidoHtml += " <h1>Reporte del Campeonato</h1>\n";
-contenidoHtml += " <h2>Equipos</h2>\n <ul>\n";
-for (Equipo equipo : equipos) {
-contenidoHtml += " <li>" + equipo.getNombre() + "</li>\n";
-}
-contenidoHtml += " </ul>\n <h2>Árbitros</h2>\n <ul>\n";
-for (Arbitro arbitro : arbitros) {
-contenidoHtml += " <li>" + arbitro.getNombre() + "</li>\n";
 
+// Estrategias concretas
+class BonificacionDelantero implements EstrategiaBonificacion {
+    @Override
+    public void calcular(Jugador jugador) {
+        System.out.println("Calculando bonificación alta para Delantero: " + jugador.getNombre());
+    }
 }
-contenidoHtml += " </ul>\n</body></html>";
-System.out.println(contenidoHtml);
+
+class BonificacionPortero implements EstrategiaBonificacion {
+    @Override
+    public void calcular(Jugador jugador) {
+        System.out.println("Calculando bonificación estándar para Portero: " + jugador.getNombre());
+    }
 }
+
+class BonificacionDefecto implements EstrategiaBonificacion {
+    @Override
+    public void calcular(Jugador jugador) {
+        System.out.println("Calculando bonificación base para: " + jugador.getNombre());
+    }
 }
+
+// Fábrica para elegir la estrategia adecuada
+class FabricaBonificaciones {
+    public static EstrategiaBonificacion obtenerEstrategia(String posicion) {
+        return switch (posicion) {
+            case "Delantero" -> new BonificacionDelantero();
+            case "Portero" -> new BonificacionPortero();
+            default -> new BonificacionDefecto();
+        };
+    }
+}
+
+// Uso en GestorCampeonato
+public void calcularBonificaciones() {
+    System.out.println("\n--- Calculando Bonificaciones de Jugadores ---");
+    for (Equipo equipo : equipos) {
+        for (Jugador jugador : equipo.getJugadores()) {
+            EstrategiaBonificacion estrategia = FabricaBonificaciones.obtenerEstrategia(jugador.getPosicion());
+            estrategia.calcular(jugador);
+        }
+    }
+}
+
+
+// =============================
+// --- OCP (mala implementación)
+// =============================
+public class GestorCampeonato {
+    private List<Equipo> equipos = new ArrayList<>();
+    private List<Arbitro> arbitros = new ArrayList<>();
+
+    public void generarReportes(String formato) {
+        if (formato.equalsIgnoreCase("TEXTO")) {
+            String contenidoReporte = "--- Reporte del Campeonato (TEXTO) ---\n";
+            contenidoReporte += "EQUIPOS:\n";
+            for (Equipo equipo : equipos) {
+                contenidoReporte += "- " + equipo.getNombre() + "\n";
+            }
+            contenidoReporte += "ÁRBITROS:\n";
+            for (Arbitro arbitro : arbitros) {
+                contenidoReporte += "- " + arbitro.getNombre() + "\n";
+            }
+            System.out.println(contenidoReporte);
+        } else if (formato.equalsIgnoreCase("HTML")) {
+            String contenidoHtml = "<html><body>\n";
+            contenidoHtml += " <h1>Reporte del Campeonato</h1>\n";
+            contenidoHtml += " <h2>Equipos</h2>\n <ul>\n";
+            for (Equipo equipo : equipos) {
+                contenidoHtml += " <li>" + equipo.getNombre() + "</li>\n";
+            }
+            contenidoHtml += " </ul>\n <h2>Árbitros</h2>\n <ul>\n";
+            for (Arbitro arbitro : arbitros) {
+                contenidoHtml += " <li>" + arbitro.getNombre() + "</li>\n";
+            }
+            contenidoHtml += " </ul>\n</body></html>";
+            System.out.println(contenidoHtml);
+        }
+    }
+}
+
+// =============================
+// --- OCP (versión corregida)
+// =============================
+
+// --- Interfaz para reportes ---
+interface Reporte {
+    void generar(List<Equipo> equipos, List<Arbitro> arbitros);
+}
+
+// Reporte en TEXTO
+class ReporteTexto implements Reporte {
+    @Override
+    public void generar(List<Equipo> equipos, List<Arbitro> arbitros) {
+        String contenido = "--- Reporte del Campeonato (TEXTO) ---\n";
+        contenido += "EQUIPOS:\n";
+        for (Equipo equipo : equipos) {
+            contenido += "- " + equipo.getNombre() + "\n";
+        }
+        contenido += "ÁRBITROS:\n";
+        for (Arbitro arbitro : arbitros) {
+            contenido += "- " + arbitro.getNombre() + "\n";
+        }
+        System.out.println(contenido);
+    }
+}
+
+// Reporte en HTML
+class ReporteHtml implements Reporte {
+    @Override
+    public void generar(List<Equipo> equipos, List<Arbitro> arbitros) {
+        String contenidoHtml = "<html><body>\n";
+        contenidoHtml += " <h1>Reporte del Campeonato</h1>\n";
+        contenidoHtml += " <h2>Equipos</h2>\n <ul>\n";
+        for (Equipo equipo : equipos) {
+            contenidoHtml += " <li>" + equipo.getNombre() + "</li>\n";
+        }
+        contenidoHtml += " </ul>\n <h2>Árbitros</h2>\n <ul>\n";
+        for (Arbitro arbitro : arbitros) {
+            contenidoHtml += " <li>" + arbitro.getNombre() + "</li>\n";
+        }
+        contenidoHtml += " </ul>\n</body></html>";
+        System.out.println(contenidoHtml);
+    }
+}
+
+// Nueva forma de usar reportes (sin modificar GestorCampeonato)
+class GestorCampeonatoOCP {
+    private List<Equipo> equipos = new ArrayList<>();
+    private List<Arbitro> arbitros = new ArrayList<>();
+
+    public void generarReporte(Reporte reporte) {
+        reporte.generar(equipos, arbitros);
+    }
+}
+
 
 
 // Método principal para simular la ejecución del módulo
